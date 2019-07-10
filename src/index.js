@@ -1,52 +1,34 @@
 import React from 'react';
-import ReactDOM from'react-dom';
-
+import ReactDOM from 'react-dom';
+import SeasonDisplay from './SeasonDisplay';
+import Spinner from './Spinner';
 
 
 class App extends React.Component {
-    constructor(props){
-         super(props); //super props will call the parent constr witch is super from react components
-        
-     //this is the only time we do dirrect assigmernt to this state
-        this.state = { name: 'Marinella', lat: null, errorMessage:''};
-        // console.log(this.state);
-        // window.navigator.geolocation.getCurrentPosition(
-        //     pos => {
-        //         //we call setstate for updating my state
-        //         console.log(pos);
-        //         this.setState({ lat: pos.coords.latitude});
-                
-        //     },
-        //     err => {
-        //         console.log(err);
-        //         this.setState({errorMessage:err.message});
-        //     }
-            
-        // ); the same as in the DidMount
-    }
-
+    state = {lat:null, errorMessage:''};      
     componentDidMount(){
         window.navigator.geolocation.getCurrentPosition(
         pos => this.setState({ lat: pos.coords.latitude}),
-        err => {
-            this.setState({errorMessage:err.message});
-        }
-     );
-
+        err =>this.setState({errorMessage:err.message})
+         );
+     }
+    renderContent= () =>{
+        if(this.state.lat && !this.state.errorMessage){
+            return <SeasonDisplay lat= {this.state.lat}/>
     }
-    
+    if(!this.state.lat && this.state.errorMessage){
+            return <div>Error: {this.state.errorMessage}</div>;
+    }
+   return <Spinner message ="Please accept location request"/>;
+    };
+
+
     //react says we have to define render
     render() {
-
-           if(this.state.lat && !this.state.errorMessage){
-                return <div>latitude: {this.state.lat}</div>
-            }
-            if(!this.state.lat && this.state.errorMessage){
-                return <div>Error: {this.state.errorMessage}</div>
-            }
-            else if(!this.state.lat && !this.state.errorMessage){
-                return<div>Loading:</div>
-            }
-    };
-}
-ReactDOM.render(<App />,document.querySelector("#root"));
+       return(
+       <div className = "border red">
+        {this.renderContent()}</div>
+       )
+    }
+};
+ReactDOM.render(<App />, document.querySelector('#root'));
